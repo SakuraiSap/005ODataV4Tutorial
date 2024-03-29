@@ -15,6 +15,19 @@
 							items="{
 								path: '/People'
 							}">
+							<headerToolbar>
+								<OverflowToolbar >
+									<content>
+										<ToolbarSpacer ></ToolbarSpacer>
+										<Button 
+											id="refreshUsersButton"
+											icon="sap-icon://refresh"
+											tooltip="{i18n>refreshButtonText}"
+											press=".onRefresh"
+										></Button>
+									</content>
+								</OverflowToolbar>
+							</headerToolbar>
 							<columns>
 								<Column id="userNameColumn">
 									<Text text="{i18n>userNameLabelText}"/>
