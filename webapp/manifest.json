@@ -73,6 +73,7 @@
 					"operationMode": "Server"
 				}
 			}
-		}
+		},
+		"handleValidation": true
 	}
 }

@@ -8,6 +8,7 @@
     "start": "ui5 serve --open index.html"
   },
   "devDependencies": {
+    "@openui5/ts-types": "^1.122.1",
     "@ui5/cli": "^3"
   }
 }
