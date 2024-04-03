@@ -15,7 +15,8 @@
 							items="{
 								path: '/People',
 								parameters: {
-									$count:true
+									$count:true,
+									$$updateGroupId: 'peopleGroup'
 								}
 							}">
 							<headerToolbar>
@@ -28,6 +29,16 @@
 											placeholder="{i18n>searchFieldPlaceholder}"
 											search=".onSearch"
 										></SearchField>
+										<Button 
+											id="addUserButton"
+											icon="sap-icon://add"
+											tooltip="{i18n>createButtonText}"
+											press=".onCreate"
+										>
+											<layoutData>
+												<OverflowToolbarLayoutData priority="NeverOverflow"></OverflowToolbarLayoutData>
+											</layoutData>
+										</Button>
 										<Button 
 											id="refreshUsersButton"
 											icon="sap-icon://refresh"
@@ -60,21 +71,52 @@
 							<items>
 								<ColumnListItem>
 									<cells>
-										<Input value="{UserName}"/>
+										<Input 
+											value="{UserName}"
+											valueLiveUpdate="true"
+											liveChange=".onInputChange"/>
+
 									</cells>
 									<cells>
-										<Input value="{FirstName}"/>
+										<Input 
+											value="{FirstName}"
+											liveChange=".onInputChange"/>
 									</cells>
 									<cells>
-										<Input value="{LastName}"/>
+										<Input 
+											value="{LastName}"
+											liveChange=".onInputChange"/>
 									</cells>
 									<cells>
-										<Input value="{Age}"/>
+										<Input 
+											value="{Age}"
+											valueLiveUpdate="true"
+											liveChange=".onInputChange"/>
 									</cells>
 								</ColumnListItem>
 							</items>
 						</Table>
 					</content>
+					<footer>
+						<Toolbar 
+							visible="{appView>hasUIChanges}"	
+						>
+						<ToolbarSpacer ></ToolbarSpacer>
+						<Button 
+							id="saveButton"
+							type="Emphasized"
+							text="{i18n>saveButtonText}"
+							enabled="{= ${message>/}.length === 0 &amp;&amp; ${appView>/usernameEmpty} === false}"
+							press=".onSave"
+						></Button>
+						<Button
+							id="cancelButton"
+							text="{i18n>cancelButtonText}"
+							press=".onResetChanges"
+						>
+						</Button>
+						</Toolbar>
+					</footer>
 				</Page>
 			</pages>
 		</App>

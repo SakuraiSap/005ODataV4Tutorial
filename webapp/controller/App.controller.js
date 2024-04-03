@@ -28,14 +28,24 @@ function (Controller, JSONModel, MessageToast, MessageBox, Sorter, Filter, Filte
 		 *  Hook for initializing the controller
 		 */
 		onInit : function () {
-			var oJSONData = {
+			const oJSONData = {
 					busy : false,
-					order: 0
-				},
-				oModel = new JSONModel(oJSONData);
-
-			this.getView().setModel(oModel, "appView");
+					order: 0,
+					hasUIChanges:false,
+					usernameEmpty: true
+				};
+			const oModel = new JSONModel(oJSONData);
 			
+			const oMessageManager = sap.ui.getCore().getMessageManager();
+			const oMessageModel = oMessageManager.getMessageModel();
+			const oMessageManagerBinding = oMessageModel.bindList("/",undefined,[],
+				new Filter("technical",FilterOperator.EQ,true));
+			
+			this.getView().setModel(oMessageModel, "message");
+			this.getView().setModel(oModel, "appView");
+
+			oMessageManagerBinding.attachChange(this._onMessageChange, this);
+			this._bTechnicalErrors = false;
 		},
 		onRefresh(){
 			const oBinding = this.byId("peopleList").getBinding("items");
@@ -47,9 +57,6 @@ function (Controller, JSONModel, MessageToast, MessageBox, Sorter, Filter, Filte
 			MessageToast.show(this._getText("refreshSuccessMessage"));
 			
 			
-		},
-		_getText(sTextId, aArgs){
-			return this.getOwnerComponent().getModel("i18n").getResourceBundle().getText(sTextId, aArgs);
 		},
 		onSearch(){
 			const oView = this.getView();
@@ -78,6 +85,102 @@ function (Controller, JSONModel, MessageToast, MessageBox, Sorter, Filter, Filte
 
 			const sMessage = this._getText("sortMessage", [this._getText(aStatesIds[iOrder])]);
 			MessageToast.show(sMessage);
+		},
+		onCreate(){
+			const oList = this.byId("peopleList");
+			const oBinding = oList.getBinding("items");
+			const oContext = oBinding.create({
+				"UserName": "",
+				"FirstName": "",
+				"LastName": "",
+				"Age": 36
+			});
+			this._setUIChange(true);
+			this.getView().getModel("appView").setProperty("/usernameEmpty", true);
+
+			oList.getItems().some(function(oItem){
+				if(oItem.getBindingContext() === oContext){
+					oItem.focus();
+					oItem.setSelected(true);
+					return true;
+				}
+			});
+		},
+		onInputChange(oEvent){
+			if(oEvent.getParameter("escPressed")){
+				this._setUIChange();
+			}else{
+				this._setUIChange(true);
+				if(oEvent.getSource().getParent().getBindingContext().getProperty("UserName")){
+					this.getView().getModel("appView").setProperty("/usernameEmpty", false);
+				}
+			}
+		},
+		onSave(){
+			let fnSucess = function(){
+				this._setBusy(false);
+				MessageToast.show(this._getText("changesSentMessage"));
+				this._setUIChange(false);
+			}.bind(this);
+
+			let fnError = function(oError){
+				this._setBusy(false);
+				this._setUIChange(false);
+				MessageBox.error(oError.message);
+			}.bind(this);
+
+			this._setBusy(true);
+			this.getView().getModel().submitBatch("peopleGroup").then(fnSucess, fnError);
+			this._bTechnicalErrors = false;
+
+
+		},
+		onResetChanges(){
+			this.byId("peopleList").getBinding("items").resetChanges();
+			this._setUIChange();
+			this._bTechnicalErrors = false;
+		},
+		_onMessageChange(oEvent){
+			const aContexts = oEvent.getSource().getContexts();
+			let bMessageOpen = false;
+
+			if(bMessageOpen || !aContexts.length){
+				return;
+			}
+
+			const aMessages = aContexts.map(function(oContext){
+				return oContext.getObject();
+			});
+			sap.ui.getCore().getMessageManager().removeMessages(aMessages);
+
+			this._setUIChange(true);
+			this._bTechnicalErrors = true;
+			MessageBox.error(aMessages[0].message, {
+				id: "serviceErrorMessageBox",
+				onClose: function(){
+					bMessageOpen = false;
+				}.bind(this)
+			});
+
+			bMessageOpen = true;
+
+		},
+		_setUIChange(bHasUIChanges){
+			if(this._bTechnicalErrors){
+				// If there is currently a technical error, then force 'true'.
+				bHasUIChanges = true;				
+			}else if(bHasUIChanges === undefined){
+				bHasUIChanges = this.getView().getModel().hasPendingChanges();
+			}
+			const oModel = this.getView().getModel("appView");
+			oModel.setProperty("/hasUIChanges", bHasUIChanges);
+		},
+		_getText(sTextId, aArgs){
+			return this.getOwnerComponent().getModel("i18n").getResourceBundle().getText(sTextId, aArgs);
+		},
+		_setBusy(bIsBusy) {
+			var oModel = this.getView().getModel("appView");
+			oModel.setProperty("/busy", bIsBusy);
 		}
 	});
 });
