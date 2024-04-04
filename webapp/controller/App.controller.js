@@ -160,6 +160,20 @@ function (Controller, JSONModel, MessageToast, MessageBox, Sorter, Filter, Filte
 			this._setUIChange();
 			this._bTechnicalErrors = false;
 		},
+		onResetDataSource(){
+			const oModel = this.getView().getModel();
+			const oPeration = oModel.bindContext("/ResetDataSource(...)");
+
+			oPeration.execute().then(
+				function(){
+				oModel.refresh();
+				MessageToast.show(this._getText("sourceResetSuccessMessage"));
+				}.bind(this),
+				function(oError){
+					MessageBox.error(oError.message);
+				}
+			);
+		},
 		_onMessageChange(oEvent){
 			const aContexts = oEvent.getSource().getContexts();
 			let bMessageOpen = false;
