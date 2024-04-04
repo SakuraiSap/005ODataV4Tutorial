@@ -116,6 +116,26 @@ function (Controller, JSONModel, MessageToast, MessageBox, Sorter, Filter, Filte
 				}
 			}
 		},
+		onDelete(){
+			const oSelect = this.byId("peopleList").getSelectedItem();
+			if(oSelect){
+				const oContext = oSelect.getBindingContext();
+				const sUserName = oContext.getProperty("UserName");
+				oContext.delete().then(
+					function(){
+						MessageToast.show(this._getText("deleteSuccessMessage", sUserName));
+					}.bind(this),
+					function(oError){
+						this._setUIChange();
+						if(oError.cancelled){
+							MessageToast.show(this._getText("deletionRestoredMessage", sUserName));
+						}
+						MessageBox.error(oError.message + ":" + sUserName);
+					}.bind(this)
+				);
+				this._setUIChange(true);
+			}
+		},
 		onSave(){
 			let fnSucess = function(){
 				this._setBusy(false);

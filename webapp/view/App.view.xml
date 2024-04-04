@@ -12,6 +12,7 @@
 							id="peopleList"
 							growing="true"
 							growingThreshold="10"
+							mode="SingleSelectLeft"
 							items="{
 								path: '/People',
 								parameters: {
@@ -34,6 +35,16 @@
 											icon="sap-icon://add"
 											tooltip="{i18n>createButtonText}"
 											press=".onCreate"
+										>
+											<layoutData>
+												<OverflowToolbarLayoutData priority="NeverOverflow"></OverflowToolbarLayoutData>
+											</layoutData>
+										</Button>
+										<Button
+											id="deleteUserButton"
+											icon="sap-icon://delete"
+											tooltip="{i18n>deleteButtonText}"
+											press=".onDelete"
 										>
 											<layoutData>
 												<OverflowToolbarLayoutData priority="NeverOverflow"></OverflowToolbarLayoutData>
@@ -99,7 +110,7 @@
 					</content>
 					<footer>
 						<Toolbar 
-							visible="{appView>hasUIChanges}"	
+							visible="{appView>/hasUIChanges}"
 						>
 						<ToolbarSpacer ></ToolbarSpacer>
 						<Button 
