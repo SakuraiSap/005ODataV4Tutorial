@@ -197,6 +197,19 @@ function (Controller, JSONModel, MessageToast, MessageBox, Sorter, Filter, Filte
 			const olayout = this.byId("defaultLayout");
 			const oSearchField = this.byId("searchField");
 
+			// do nothing when running within view destruction
+			if(!oDetailArea){
+				return;
+			}
+			const oOldContext = oDetailArea.getBindingContext();
+			if(oOldContext){
+				oOldContext.setKeepAlive(false);
+			}
+			if(oUserContext){
+				oUserContext.setKeepAlive(true,
+					this._setDetailArea.bind(this)
+				);
+			}
 			oDetailArea.setBindingContext(oUserContext || null);
 			oDetailArea.setBindingContext(oUserContext || null);
 			oDetailArea.setVisible(!!oUserContext);
