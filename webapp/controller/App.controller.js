@@ -127,12 +127,16 @@ function (Controller, JSONModel, MessageToast, MessageBox, Sorter, Filter, Filte
 					}.bind(this),
 					function(oError){
 						this._setUIChange();
+						if (oContext === oPeopleList.getSelectedItem().getBindingContext()) {
+							this._setDetailArea(oContext);
+						}
 						if(oError.cancelled){
 							MessageToast.show(this._getText("deletionRestoredMessage", sUserName));
 						}
 						MessageBox.error(oError.message + ":" + sUserName);
 					}.bind(this)
 				);
+				this._setDetailArea();
 				this._setUIChange(true);
 			}
 		},
@@ -174,6 +178,33 @@ function (Controller, JSONModel, MessageToast, MessageBox, Sorter, Filter, Filte
 				}
 			);
 		},
+		/**
+		 * A description of the entire function.
+		 *
+		 * @param {typeof sap.ui.base.Event} oEvent - description of parameter
+		 */
+		onSelectionChange(oEvent){
+			this._setDetailArea(oEvent.getParameter("listItem").getBindingContext());
+		},
+
+		/**
+		 * Toggles the visibility of the detail area
+		 *
+		 * @param {typeof object} oUserContext - the current user context
+		 */
+		_setDetailArea(oUserContext){
+			const oDetailArea = this.byId("detailArea");
+			const olayout = this.byId("defaultLayout");
+			const oSearchField = this.byId("searchField");
+
+			oDetailArea.setBindingContext(oUserContext || null);
+			oDetailArea.setBindingContext(oUserContext || null);
+			oDetailArea.setVisible(!!oUserContext);
+			olayout.setSize(oDetailArea ? "60%" : "100%");
+			olayout.setResizable(!!oUserContext);
+			oSearchField.setWidth(oUserContext ? "40%" : "20%");
+		},
+
 		_onMessageChange(oEvent){
 			const aContexts = oEvent.getSource().getContexts();
 			let bMessageOpen = false;

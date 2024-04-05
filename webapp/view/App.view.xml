@@ -2,7 +2,11 @@
 	controllerName="sap.ui.core.tutorial.odatav4.controller.App"
 	displayBlock="true"
 	xmlns="sap.m"
-	xmlns:mvc="sap.ui.core.mvc">
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:l="sap.ui.layout"
+	xmlns:semantic="sap.f.semantic"
+	xmlns:form="sap.ui.layout.form"
+	xmlns:core="sap.ui.core">
 	<Shell>
 		<App busy="{appView>/busy}" class="sapUiSizeCompact">
 			<pages>
@@ -17,105 +21,242 @@
 						></Button>
 					</headerContent>
 					<content>
-						<Table
-							id="peopleList"
-							growing="true"
-							growingThreshold="10"
-							mode="SingleSelectLeft"
-							items="{
-								path: '/People',
-								parameters: {
-									$count:true,
-									$$updateGroupId: 'peopleGroup'
-								}
-							}">
-							<headerToolbar>
-								<OverflowToolbar >
-									<content>
-										<ToolbarSpacer ></ToolbarSpacer>
-										<SearchField 
-											id="searchField"
-											width="20%"
-											placeholder="{i18n>searchFieldPlaceholder}"
-											search=".onSearch"
-										></SearchField>
-										<Button 
-											id="addUserButton"
-											icon="sap-icon://add"
-											tooltip="{i18n>createButtonText}"
-											press=".onCreate"
-										>
-											<layoutData>
-												<OverflowToolbarLayoutData priority="NeverOverflow"></OverflowToolbarLayoutData>
-											</layoutData>
-										</Button>
-										<Button
-											id="deleteUserButton"
-											icon="sap-icon://delete"
-											tooltip="{i18n>deleteButtonText}"
-											press=".onDelete"
-										>
-											<layoutData>
-												<OverflowToolbarLayoutData priority="NeverOverflow"></OverflowToolbarLayoutData>
-											</layoutData>
-										</Button>
-										<Button 
-											id="refreshUsersButton"
-											icon="sap-icon://refresh"
-											tooltip="{i18n>refreshButtonText}"
-											press=".onRefresh"
-										></Button>
-										<Button
-											id="sortUsersButton"
-											icon="sap-icon://sort"
-											tooltip="{i18n>sortButtonText}"
-											press=".onSort"
-										></Button>
-									</content>
-								</OverflowToolbar>
-							</headerToolbar>
-							<columns>
-								<Column id="userNameColumn">
-									<Text text="{i18n>userNameLabelText}"/>
-								</Column>
-								<Column id="firstNameColumn">
-									<Text text="{i18n>firstNameLabelText}"/>
-								</Column>
-								<Column id="lastNameColumn">
-									<Text text="{i18n>lastNameLabelText}"/>
-								</Column>
-								<Column id="ageColumn">
-									<Text text="{i18n>ageLabelText}"/>
-								</Column>
-							</columns>
-							<items>
-								<ColumnListItem>
-									<cells>
-										<Input 
-											value="{UserName}"
-											valueLiveUpdate="true"
-											liveChange=".onInputChange"/>
+						<l:ResponsiveSplitter defaultPane="defaultPane">
+							<l:PaneContainer orientation="Horizontal">
+								<l:SplitPane id="defaultPane">
+									<l:layoutData>
+										<l:SplitterLayoutData
+											id="defaultLayout"
+											size="100%"
+											resizable="false"
+										></l:SplitterLayoutData>
+									</l:layoutData>
+									<Table
+										id="peopleList"
+										growing="true"
+										growingThreshold="10"
+										mode="SingleSelectLeft"
+										items="{
+											path: '/People',
+											parameters: {
+												$count:true,
+												$$updateGroupId: 'peopleGroup'
+											}}"
+										selectionChange=".onSelectionChange"	
+									>			
+									<headerToolbar>
+										<OverflowToolbar >
+											<content>
+												<ToolbarSpacer ></ToolbarSpacer>
+												<SearchField 
+													id="searchField"
+													width="20%"
+													placeholder="{i18n>searchFieldPlaceholder}"
+													search=".onSearch"
+												></SearchField>
+												<Button 
+													id="addUserButton"
+													icon="sap-icon://add"
+													tooltip="{i18n>createButtonText}"
+													press=".onCreate"
+												>
+													<layoutData>
+														<OverflowToolbarLayoutData priority="NeverOverflow"></OverflowToolbarLayoutData>
+													</layoutData>
+												</Button>
+												<Button
+													id="deleteUserButton"
+													icon="sap-icon://delete"
+													tooltip="{i18n>deleteButtonText}"
+													press=".onDelete"
+												>
+													<layoutData>
+														<OverflowToolbarLayoutData priority="NeverOverflow"></OverflowToolbarLayoutData>
+													</layoutData>
+												</Button>
+												<Button 
+													id="refreshUsersButton"
+													icon="sap-icon://refresh"
+													tooltip="{i18n>refreshButtonText}"
+													press=".onRefresh"
+												></Button>
+												<Button
+													id="sortUsersButton"
+													icon="sap-icon://sort"
+													tooltip="{i18n>sortButtonText}"
+													press=".onSort"
+												></Button>
+											</content>
+										</OverflowToolbar>
+									</headerToolbar>
+									<columns>
+										<Column id="userNameColumn">
+											<Text text="{i18n>userNameLabelText}"/>
+										</Column>
+										<Column id="firstNameColumn">
+											<Text text="{i18n>firstNameLabelText}"/>
+										</Column>
+										<Column id="lastNameColumn">
+											<Text text="{i18n>lastNameLabelText}"/>
+										</Column>
+										<Column id="ageColumn">
+											<Text text="{i18n>ageLabelText}"/>
+										</Column>
+									</columns>
+									<items>
+										<ColumnListItem>
+											<cells>
+												<Input 
+													value="{UserName}"
+													valueLiveUpdate="true"
+													liveChange=".onInputChange"/>
+		
+											</cells>
+											<cells>
+												<Input 
+													value="{FirstName}"
+													liveChange=".onInputChange"/>
+											</cells>
+											<cells>
+												<Input 
+													value="{LastName}"
+													liveChange=".onInputChange"/>
+											</cells>
+											<cells>
+												<Input 
+													value="{Age}"
+													valueLiveUpdate="true"
+													liveChange=".onInputChange"/>
+											</cells>
+										</ColumnListItem>
+									</items>
+									</Table>
+								</l:SplitPane>
+								<!-- Details  -->
+								<l:SplitPane>
+									<semantic:SemanticPage 
+										id="detailArea"
+										visible="false"
+									>
+										<semantic:titleHeading>
+											<Title
+												text="{FirstName} {LastName}"
+												level="H2"
+											></Title>
+										</semantic:titleHeading>
+										<semantic:headerContent>
+											<FlexBox >
+												<VBox>
+													<ObjectAttribute text="{i18n>userNameLabelText}"></ObjectAttribute>
+													<ObjectAttribute text="{UserName}"></ObjectAttribute>
+												</VBox>
+												<VBox class="sapUiMediumMarginBegin">
+													<ObjectAttribute text="{i18n>ageLabelText}"></ObjectAttribute>
+													<ObjectNumber number="{Age}" unit="Years"></ObjectNumber>
+												</VBox>
+											</FlexBox>
+										</semantic:headerContent>
+										<semantic:content>
+											<VBox >
+												<FlexBox wrap="Wrap">
+													<form:Form editable="false">
+														<form:title>
+															<core:Title text="{i18n>addressTitleText}"></core:Title>
+														</form:title>
+														<form:layout>
+															<form:ResponsiveGridLayout 
+																labelSpanXL="3"
+																labelSpanL="3"
+																labelSpanM="3"
+																labelSpanS="12"
+																adjustLabelSpan="false"
+																emptySpanXL="4"
+																emptySpanL="4"
+																emptySpanM="4"
+																emptySpanS="0"
+																columnsXL="1"
+																columnsL="1"
+																columnsM="1"
+																singleContainerFullSize="false"
+															></form:ResponsiveGridLayout>
+														</form:layout>
+														<form:formContainers>
+															<form:FormContainer >
+																<form:formElements>
+																	<form:FormElement label="{i18n>addressLabelText}" >
+																		<form:fields>
+																			<Text text="{HomeAddress/Address}"></Text>
+																		</form:fields>								
+																	</form:FormElement>
+																	<form:FormElement label="{i18n>cityLabelText}">
+																		<form:fields>
+																			<Text text="{HomeAddress/City/Name}" />
+																		</form:fields>
+																	</form:FormElement>
+																	<form:FormElement label="{i18n>regionLabelText}">
+																		<form:fields>
+																			<Text text="{HomeAddress/City/Region}" />
+																		</form:fields>
+																	</form:FormElement>
+																	<form:FormElement label="{i18n>countryLabelText}">
+																		<form:fields>
+																			<Text text="{HomeAddress/City/CountryRegion}" />
+																		</form:fields>
+																	</form:FormElement>														
+																</form:formElements>
+															</form:FormContainer>
+														</form:formContainers>
+													</form:Form>
+													<form:Form	editable="false">
+														<form:title>
+															<core:Title text="{i18n>bestFriendTitleText}" />
+														</form:title>
+														<form:layout>
+															<form:ResponsiveGridLayout
+																labelSpanXL="3"
+																labelSpanL="3"
+																labelSpanM="3"
+																labelSpanS="12"
+																adjustLabelSpan="false"
+																emptySpanXL="4"
+																emptySpanL="4"
+																emptySpanM="4"
+																emptySpanS="0"
+																columnsXL="1"
+																columnsL="1"
+																columnsM="1"
+																singleContainerFullSize="false" />
+														</form:layout>
+														<form:formContainers>
+															<form:FormContainer>
+																<form:formElements>
+																	<form:FormElement label="{i18n>nameLabelText}">
+																		<form:fields>
+																			<Text text="{BestFriend/FirstName} {BestFriend/LastName}" />
+																		</form:fields>
+																	</form:FormElement>
+																	<form:FormElement label="{i18n>ageLabelText}">
+																		<form:fields>
+																			<Text text="{BestFriend/Age}" />
+																		</form:fields>
+																	</form:FormElement>
+																	<form:FormElement label="{i18n>userNameLabelText}">
+																		<form:fields>
+																			<Text text="{BestFriend/UserName}" />
+																		</form:fields>
+																	</form:FormElement>
+																</form:formElements>
+															</form:FormContainer>
+														</form:formContainers>
+													</form:Form>													
+												</FlexBox>
+											</VBox>
+										</semantic:content>
+									</semantic:SemanticPage>
+								</l:SplitPane>
+							</l:PaneContainer>
+						</l:ResponsiveSplitter>
 
-									</cells>
-									<cells>
-										<Input 
-											value="{FirstName}"
-											liveChange=".onInputChange"/>
-									</cells>
-									<cells>
-										<Input 
-											value="{LastName}"
-											liveChange=".onInputChange"/>
-									</cells>
-									<cells>
-										<Input 
-											value="{Age}"
-											valueLiveUpdate="true"
-											liveChange=".onInputChange"/>
-									</cells>
-								</ColumnListItem>
-							</items>
-						</Table>
 					</content>
 					<footer>
 						<Toolbar 
